@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Search the Word</title>
+<meta name="description" content="A word search game of encouraging KJV Bible verses.">
+<meta name="theme-color" content="#0F2A26">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Search the Word">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+<section id="home" class="screen on">
+  <div class="hero">
+    <div class="mini" aria-hidden="true">
+      <svg viewBox="0 0 5 5" class="mini-lines">
+        <line x1=".5" y1="2.5" x2="3.5" y2="2.5" class="c0"/>
+        <line x1="1.5" y1="1.5" x2="4.5" y2="1.5" class="c1"/>
+        <line x1=".5" y1="4.5" x2="4.5" y2="4.5" class="c2"/>
+      </svg>
+      <div class="mini-grid"><span>S</span><span>E</span><span>A</span><span>R</span><span>C</span><span>H</span><span>L</span><span>O</span><span>V</span><span>E</span><span>W</span><span>O</span><span>R</span><span>D</span><span>T</span><span>A</span><span>F</span><span>I</span><span>N</span><span>H</span><span>P</span><span>E</span><span>A</span><span>C</span><span>E</span></div>
+    </div>
+    <h1>Search the Word</h1>
+    <p class="tag">Find the hidden words. Uncover the verse.</p>
+  </div>
+  <nav class="home-actions">
+    <button id="btnPlay" class="primary"><span class="t">Continue</span><span class="s" id="playSub">Level 1</span></button>
+    <button id="btnDaily" class="row"><span class="t">Daily verse</span><span class="s" id="dailySub"></span></button>
+    <button class="row" data-go="levels"><span class="t">Levels</span><span class="s" id="levelsSub"></span></button>
+    <button class="row" data-go="verses"><span class="t">My verses</span><span class="s" id="versesSub"></span></button>
+    <button class="row" data-go="stats"><span class="t">Progress and awards</span><span class="s" id="statsSub"></span></button>
+  </nav>
+  <div id="installBar" class="install" hidden>
+    <p id="installText">Add Search the Word to your home screen to play offline.</p>
+    <button id="btnInstall">Install</button>
+  </div>
+  <figure id="lastVerse" class="last" hidden><blockquote></blockquote><figcaption></figcaption></figure>
+</section>
+
+<section id="levels" class="screen">
+  <header class="bar"><button class="back" data-go="home" aria-label="Back to menu">‹</button><h2>Levels</h2></header>
+  <div class="scroll"><div id="lvGrid" class="lvgrid"></div></div>
+</section>
+
+<section id="verses" class="screen">
+  <header class="bar"><button class="back" data-go="home" aria-label="Back to menu">‹</button><h2>My verses</h2></header>
+  <div class="vtools">
+    <input id="vSearch" type="search" placeholder="Search words or books" aria-label="Search your verses">
+    <div class="seg" role="group" aria-label="Filter"><button data-vf="all" class="on">All</button><button data-vf="fav">Saved</button></div>
+  </div>
+  <div class="scroll"><div id="vList"></div></div>
+</section>
+
+<section id="stats" class="screen">
+  <header class="bar"><button class="back" data-go="home" aria-label="Back to menu">‹</button><h2>Progress and awards</h2></header>
+  <div class="scroll pad">
+    <dl id="statRows" class="statrows"></dl>
+    <h3 class="sub">Awards</h3>
+    <ul id="achList" class="ach"></ul>
+    <h3 class="sub">Settings</h3>
+    <label class="switch"><input type="checkbox" id="sndToggle"> Sound effects</label>
+    <button id="btnReset" class="danger">Reset all progress</button>
+  </div>
+</section>
+
+<section id="game" class="screen">
+  <header class="gbar">
+    <button id="gBack" class="back" aria-label="Back to menu">‹</button>
+    <div id="gTitle" class="gtitle">Level 1</div>
+    <div id="gTime" class="gtime" aria-label="Time">0:00</div>
+  </header>
+  <div id="verseStrip" class="verse-strip" aria-label="Hidden verse"></div>
+  <div id="boardWrap" class="board-wrap">
+    <div id="board" class="board">
+      <svg id="lines" class="lines"></svg>
+      <div id="letters" class="letters"></div>
+    </div>
+  </div>
+  <p id="mode" class="mode"></p>
+  <div id="chips" class="chips"></div>
+  <p id="ctxLine" class="ctx" hidden></p>
+  <div class="tools">
+    <button id="hLetter">Show a first letter <small>−40</small></button>
+    <button id="hCtx">Show verse context <small>−25</small></button>
+    <button id="hGuess" class="guess">Guess the verse</button>
+  </div>
+</section>
+
+</div>
+
+<div id="guessSheet" class="overlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="guessTitle">
+    <h2 id="guessTitle">Which verse is it?</h2>
+    <p class="note">Guess right for bonus points. The more still hidden, the bigger the bonus. A wrong guess costs 100.</p>
+    <div id="guessVerse" class="verse-strip in-sheet"></div>
+    <div id="guessOpts" class="opts"></div>
+    <button class="ghost" data-close>Keep searching</button>
+  </div>
+</div>
+
+<div id="resSheet" class="overlay" hidden>
+  <div class="sheet res" role="dialog" aria-modal="true" aria-labelledby="resTitle">
+    <h2 id="resTitle">Level complete</h2>
+    <p id="resStars" class="stars"></p>
+    <blockquote id="resVerse" class="reveal"></blockquote>
+    <p id="resRef" class="ref"></p>
+    <dl id="resRows" class="breakdown"></dl>
+    <div class="ractions"><button id="rCopy">Copy</button><button id="rShare">Share</button><button id="rFav">♡ Save</button></div>
+    <div class="rnav"><button id="rReplay" class="ghost">Replay</button><button id="rNext" class="primary">Next level</button></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="verses.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
